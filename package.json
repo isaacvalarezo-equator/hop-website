@@ -1,0 +1,11 @@
+{
+  "name": "hop-website",
+  "private": true,
+  "description": "Heart of Passion site, with the Heart Meter for HoP Nola leaders under /leaders/",
+  "scripts": {
+    "verificar": "node tests/leaders.js && node tests/sitio.mjs"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1"
+  }
+}

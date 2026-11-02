@@ -1,0 +1,39 @@
+name: verificar
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Heart Meter backend, money math, Spotfund reader, schema and safety checks
+        run: node tests/leaders.js
+      - name: Install Playwright
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Site audit (5 pages, 3 widths, light and dark)
+        run: node tests/sitio.mjs vista-previa/sitio
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Heart Meter phone checks against a fake backend
+        run: |
+          pip install playwright==1.48.0
+          python -m playwright install --with-deps chromium
+          mkdir -p vista-previa/leaders
+          python tests/movil.py vista-previa/leaders
+      - name: Keep the screenshots as a preview
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vista-previa
+          path: vista-previa/
+          retention-days: 14
