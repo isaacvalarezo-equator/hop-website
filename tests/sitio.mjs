@@ -57,6 +57,12 @@ for (const tema of temas) {
     for (const p of paginas) {
       const id = `${p} [${v.nombre} ${tema}]`;
       await pagina.goto(pathToFileURL(join(raiz, p)).href, { waitUntil: "networkidle" });
+      // Baja por toda la página para que carguen las fotos con loading="lazy", y vuelve arriba.
+      await pagina.evaluate(async () => {
+        for (let y = 0; y < document.body.scrollHeight; y += innerHeight / 2) { scrollTo(0, y); await new Promise((r) => setTimeout(r, 60)); }
+        await Promise.all([...document.images].map((i) => (i.complete ? 0 : new Promise((r) => { i.onload = i.onerror = r; }))));
+        scrollTo(0, 0);
+      });
 
       const r = await pagina.evaluate(() => {
         const ids = [...document.querySelectorAll("[id]")].map((e) => e.id);
@@ -162,8 +168,8 @@ ok(!(await m.isVisible("#menu a[href='about.html']")), "menú: Escape lo cierra"
 const movimiento = await navegador.newContext({ reducedMotion: "no-preference" });
 const animada = await movimiento.newPage();
 await animada.goto(pathToFileURL(join(raiz, "index.html")).href);
-ok(await animada.locator(".portada .emblema").evaluate((el) => getComputedStyle(el).animationName === "entrar-emblema"), "movimiento: el emblema entra una vez");
-ok(await animada.locator(".rayos").evaluate((el) => getComputedStyle(el).animationName === "none"), "movimiento: los rayos no giran continuamente");
+ok(await animada.locator(".hero-titulo .linea > span").first().evaluate((el) => getComputedStyle(el).animationName === "subir"), "movimiento: el título del inicio entra una vez");
+ok(await animada.locator(".hero-titulo .linea > span").first().evaluate((el) => getComputedStyle(el).animationIterationCount === "1"), "movimiento: la entrada del título no se repite");
 await animada.locator(".mision li").last().scrollIntoViewIfNeeded();
 await animada.waitForFunction(() => document.querySelector(".mision li:last-child").classList.contains("visible"));
 ok(true, "movimiento: el contenido aparece al entrar en pantalla");
@@ -172,7 +178,8 @@ await movimiento.close();
 const reducido = await navegador.newContext({ reducedMotion: "reduce" });
 const sinMovimiento = await reducido.newPage();
 await sinMovimiento.goto(pathToFileURL(join(raiz, "index.html")).href);
-ok(await sinMovimiento.locator(".portada .emblema").evaluate((el) => getComputedStyle(el).animationName === "none"), "movimiento reducido: el emblema no se desplaza");
+ok(await sinMovimiento.locator(".hero-titulo .linea > span").first().evaluate((el) => getComputedStyle(el).animationName === "none"), "movimiento reducido: el título no se desplaza");
+ok(await sinMovimiento.locator(".hero-fotos img.activa").evaluate((el) => getComputedStyle(el).animationName === "none"), "movimiento reducido: la foto no hace zoom");
 ok(await sinMovimiento.locator(".mision li").first().evaluate((el) => getComputedStyle(el).opacity === "1"), "movimiento reducido: el contenido es visible");
 await reducido.close();
 

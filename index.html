@@ -16,7 +16,7 @@
 <script src="assets/main.js" defer></script>
 
 </head>
-<body>
+<body class="inicio">
 <a class="saltar" href="#contenido">Skip to content</a>
 
 <div class="aviso-borrador">
@@ -46,42 +46,45 @@
 
 <main id="contenido">
 
-  <section class="portada" aria-labelledby="titulo">
-    <div class="rayos" aria-hidden="true"></div>
-    <div class="contenedor">
-      <img class="emblema" src="assets/emblema.webp" alt="" width="800" height="791" fetchpriority="high">
-      <div>
-        <p class="etiqueta">For teens, from teens</p>
-        <h1 id="titulo">
-          <span class="rojo">For teens with cancer,</span>
-          <span class="celeste">from teens</span>
-          <span>who care.</span>
-        </h1>
-        <p class="entrada">We’re committed to providing experiences that help teens with cancer tear down walls and add a spark of VIP treatment during key life phases.</p>
-        <div class="botones">
-          <a class="boton" href="red-carpet-day.html">Learn about Red Carpet Day</a>
-          <a class="boton secundario" href="get-involved.html#lead">Become a Teen Leader</a>
-        </div>
+  <section class="hero" aria-labelledby="titulo">
+    <div class="hero-fotos" aria-hidden="true">
+      <img class="activa" src="assets/fotos/equipo-1200.webp" srcset="assets/fotos/equipo-720.webp 720w, assets/fotos/equipo-1200.webp 1200w, assets/fotos/equipo-2048.webp 2048w" sizes="100vw" alt="" width="2048" height="1360" fetchpriority="high">
+      <img src="assets/fotos/rcd-1200.webp" srcset="assets/fotos/rcd-720.webp 720w, assets/fotos/rcd-1200.webp 1200w" sizes="100vw" alt="" width="1200" height="1200" fetchpriority="low" decoding="async">
+      <img src="assets/fotos/leaders-960.webp" srcset="assets/fotos/leaders-640.webp 640w, assets/fotos/leaders-960.webp 960w" sizes="100vw" alt="" width="960" height="720" fetchpriority="low" decoding="async">
+    </div>
+    <div class="hero-velo" aria-hidden="true"></div>
+    <div class="contenedor hero-contenido">
+      <p class="etiqueta hero-etiqueta"><span>For teens, from teens</span></p>
+      <h1 id="titulo" class="hero-titulo"><span class="linea"><span>Heart</span></span> <span class="linea"><span>of Passion</span></span></h1>
+      <p class="hero-lema">For teens with cancer, <span class="celeste">from teens who care.</span></p>
+      <div class="botones hero-botones">
+        <a class="boton" href="donate.html">Donate</a>
+        <a class="boton claro" href="red-carpet-day.html">Red Carpet Day</a>
       </div>
+    </div>
+    <div class="hero-pie contenedor" aria-hidden="true">
+      <span class="hero-puntos"><i class="activo"></i><i></i><i></i></span>
+      <span class="hero-scroll">Scroll</span>
     </div>
   </section>
 
-  <section class="seccion superficie" aria-labelledby="mision-titulo">
+  <section class="seccion manifiesto" aria-labelledby="mision-titulo">
     <div class="contenedor">
-      <div class="cabecera-seccion aparece">
-        <p class="etiqueta">Our mission</p>
-        <h2 id="mision-titulo">Three things we set out to do</h2>
-      </div>
+      <h2 id="mision-titulo" class="etiqueta">Our mission</h2>
+      <p class="frase-grande" data-palabras>We’re committed to providing experiences that help teens with cancer tear down walls and add a spark of VIP treatment during key life phases.</p>
       <ol class="mision">
         <li class="aparece">
+          <span class="numero" aria-hidden="true">01</span>
           <p class="display">Tear down walls</p>
           <p>that cancer builds emotionally and socially for teens.</p>
         </li>
         <li class="aparece">
+          <span class="numero" aria-hidden="true">02</span>
           <p class="display">Provide a spark</p>
           <p>of VIP treatment during key life phases.</p>
         </li>
         <li class="aparece">
+          <span class="numero" aria-hidden="true">03</span>
           <p class="display">Pave the way</p>
           <p>for a future of socially minded, personally responsible community and business leaders.</p>
         </li>
@@ -89,74 +92,97 @@
     </div>
   </section>
 
+  <section class="banda-foto" aria-label="Heart of Passion teen leaders">
+    <img class="paralaje" src="assets/fotos/cima-1020.webp" srcset="assets/fotos/cima-640.webp 640w, assets/fotos/cima-1020.webp 1020w" sizes="100vw" alt="A row of Heart of Passion teen leaders in red shirts, holding hands with their arms raised, looking out over a wide green valley" width="1020" height="322" loading="lazy">
+  </section>
+
   <section class="seccion" aria-labelledby="historia-titulo">
-    <div class="contenedor dos-columnas">
+    <div class="contenedor historia">
+      <figure class="historia-foto aparece">
+        <img src="assets/fotos/abrazo-720.webp" alt="Two teens sharing a long hug beside a van, while a friend in a green shirt looks on" width="720" height="480" loading="lazy">
+      </figure>
       <div class="aparece">
         <p class="etiqueta">Our story</p>
         <h2 id="historia-titulo">It started with one teen and a weekend</h2>
         <p>Our “for teens, from teens” programming model has allowed Heart of Passion to connect teens living with cancer to each other to form an emotional support structure in an environment that only teens themselves could create. Simultaneously, our teen leaders personally experience the value and purpose of their work and compassion.</p>
+        <blockquote class="cita">
+          <p>I named it “Red Carpet Day” because I wanted our guests to feel like the red carpet was rolled out for them every moment they were with us.</p>
+          <footer>Savannah Solomon, founder, on the first retreat in Atlanta, 2002</footer>
+        </blockquote>
         <p><a class="mas" href="about.html">Read Savannah’s story</a></p>
       </div>
-      <figure class="destacado aparece">
-        <blockquote>
-          <p>I named it “Red Carpet Day” because I wanted our guests to feel like the red carpet was rolled out for them every moment they were with us.</p>
-        </blockquote>
-        <figcaption class="suave">Savannah Solomon, founder, on the first retreat in Atlanta, 2002</figcaption>
-      </figure>
     </div>
   </section>
 
-  <section class="seccion alfombra" aria-labelledby="programas-titulo">
+  <section class="cifras" aria-label="Heart of Passion in numbers">
+    <div class="contenedor cifras-fila">
+      <div class="cifra aparece"><span class="cifra-num" data-cuenta="2002">2002</span><span class="cifra-txt">First Red Carpet Day, in Atlanta</span></div>
+      <div class="cifra aparece"><span class="cifra-num" data-cuenta="2004">2004</span><span class="cifra-txt">Heart of Passion founded</span></div>
+      <div class="cifra aparece"><span class="cifra-num" data-cuenta="100" data-sufijo="%">100%</span><span class="cifra-txt">Volunteer-operated</span></div>
+      <div class="cifra aparece"><span class="cifra-num" data-cuenta="100" data-sufijo="%">100%</span><span class="cifra-txt">Donor-driven</span></div>
+    </div>
+    <div class="contenedor"><p class="nota">The two 100% statements appeared on HoP's 2025 site. Confirm that they remain accurate.</p></div>
+  </section>
+
+  <section class="seccion" aria-labelledby="programas-titulo">
     <div class="contenedor">
       <div class="cabecera-seccion aparece">
         <p class="etiqueta">Our programs</p>
         <h2 id="programas-titulo">The red carpet, rolled out</h2>
       </div>
-      <div class="dos-columnas">
-        <div class="aparece">
-          <h3>Red Carpet Day</h3>
-          <p>Through our Red Carpet Day (RCD) retreats, we provide positive unique experiences for teens with cancer to anticipate, enjoy, and make memories to share: positive memories to help balance out the negative uniqueness that cancer brings to their everyday lives.</p>
-          <div class="botones"><a class="boton" href="red-carpet-day.html">About Red Carpet Day</a></div>
-        </div>
-        <div class="aparece">
-          <h3>Hang Time with HoP</h3>
-          <p>HoP's archived site described Hang Time as a monthly virtual support experience for teens with cancer, created during the Covid pandemic.</p>
-          <p class="nota">Confirm whether Hang Time still runs and how guests sign up.</p>
-          <div class="botones"><a class="boton secundario" href="red-carpet-day.html#hang-time">About Hang Time</a></div>
-        </div>
+      <div class="programas">
+        <article class="programa programa-grande aparece">
+          <div class="programa-foto"><img src="assets/fotos/rcd-720.webp" srcset="assets/fotos/rcd-720.webp 720w, assets/fotos/rcd-1200.webp 1200w" sizes="(min-width: 56rem) 40vw, 100vw" alt="A group of teens, many in red Heart of Passion shirts and Mardi Gras beads, gathered in a decorated hotel ballroom" width="1200" height="1200" loading="lazy"></div>
+          <div class="programa-texto">
+            <h3>Red Carpet Day</h3>
+            <p>Through our Red Carpet Day (RCD) retreats, we provide positive unique experiences for teens with cancer to anticipate, enjoy, and make memories to share: positive memories to help balance out the negative uniqueness that cancer brings to their everyday lives.</p>
+            <a class="mas" href="red-carpet-day.html">About Red Carpet Day</a>
+          </div>
+        </article>
+        <article class="programa aparece">
+          <div class="programa-texto">
+            <h3>Hang Time with HoP</h3>
+            <p>HoP's archived site described Hang Time as a monthly virtual support experience for teens with cancer, created during the Covid pandemic.</p>
+            <p class="nota">Confirm whether Hang Time still runs and how guests sign up.</p>
+            <a class="mas" href="red-carpet-day.html#hang-time">About Hang Time</a>
+          </div>
+        </article>
       </div>
     </div>
   </section>
 
-  <section class="seccion" aria-labelledby="ayudar-titulo">
+  <section class="seccion superficie" aria-labelledby="ayudar-titulo">
     <div class="contenedor">
       <div class="cabecera-seccion aparece">
         <p class="etiqueta">Get involved</p>
-        <h2 id="ayudar-titulo">Get involved with Heart of Passion</h2>
+        <h2 id="ayudar-titulo">Three ways in</h2>
         <p class="entrada">Heart of Passion is 100% volunteer-operated, 100% donor-driven and every dollar donated goes directly to our program operations.</p>
         <p class="nota">This statement appeared on HoP's 2025 site. Confirm that it remains accurate.</p>
       </div>
       <div class="tarjetas">
-        <article class="tarjeta aparece">
+        <a class="tarjeta aparece" href="donate.html">
+          <span class="tarjeta-num" aria-hidden="true">01</span>
           <h3>Donate</h3>
           <p>From the minute a guest starts the trip until the minute their parents pick them up, HoP covers every meal, activity, hotel room, and surprise. Donations are tax deductible.</p>
-          <a class="mas" href="donate.html">Ways to give</a>
-        </article>
-        <article class="tarjeta aparece">
+          <span class="mas">Ways to give</span>
+        </a>
+        <a class="tarjeta aparece" href="get-involved.html#mentor">
+          <span class="tarjeta-num" aria-hidden="true">02</span>
           <h3>Mentor</h3>
           <p>Mentor teams of 3 to 5 young professionals challenge and support a cohort of 15 teen leaders while the leaders plan their summer Red Carpet Day retreat completely on their own.</p>
-          <a class="mas" href="get-involved.html#mentor">Be an adult mentor</a>
-        </article>
-        <article class="tarjeta aparece">
+          <span class="mas">Be an adult mentor</span>
+        </a>
+        <a class="tarjeta aparece" href="get-involved.html#lead">
+          <span class="tarjeta-num" aria-hidden="true">03</span>
           <h3>Lead</h3>
           <p>The Leadership Development Program is an intense year-long program for exceptionally motivated, passionate high school students. The leader cohort plans and fundraises for a summer Red Carpet Retreat for teens with cancer.</p>
-          <a class="mas" href="get-involved.html#lead">Be a teen leader</a>
-        </article>
+          <span class="mas">Be a teen leader</span>
+        </a>
       </div>
     </div>
   </section>
 
-  <section class="seccion superficie" aria-labelledby="ciudades-titulo">
+  <section class="seccion" aria-labelledby="ciudades-titulo">
     <div class="contenedor dos-columnas">
       <div class="aparece">
         <p class="etiqueta">Where we are</p>
@@ -165,7 +191,7 @@
       </div>
       <div class="aparece">
         <h3>Affiliate hospital cities</h3>
-        <ul class="lista">
+        <ul class="ciudades">
           <li>Atlanta</li>
           <li>Charlotte</li>
           <li>Dallas, TX</li>
@@ -176,6 +202,15 @@
         </ul>
         <p class="nota">This list is from 2023. Red Carpet Day has run in New Orleans since 2011 and HoP Nola is active, but New Orleans is not on it. Which cities are current?</p>
       </div>
+    </div>
+  </section>
+
+  <section class="cierre" aria-labelledby="cierre-titulo">
+    <img class="cierre-emblema" src="assets/emblema.webp" alt="" width="800" height="791" loading="lazy">
+    <div class="contenedor cierre-contenido">
+      <h2 id="cierre-titulo">Roll out the red carpet</h2>
+      <p>HoP covers every meal, activity, hotel room, and surprise for its guests. Donations are tax deductible.</p>
+      <div class="botones"><a class="boton blanco" href="donate.html">Donate</a><a class="boton contorno" href="get-involved.html">Get involved</a></div>
     </div>
   </section>
 
