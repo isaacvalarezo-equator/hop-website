@@ -170,8 +170,8 @@ const animada = await movimiento.newPage();
 await animada.goto(pathToFileURL(join(raiz, "index.html")).href);
 ok(await animada.locator(".hero-titulo .linea > span").first().evaluate((el) => getComputedStyle(el).animationName === "subir"), "movimiento: el título del inicio entra una vez");
 ok(await animada.locator(".hero-titulo .linea > span").first().evaluate((el) => getComputedStyle(el).animationIterationCount === "1"), "movimiento: la entrada del título no se repite");
-await animada.locator(".mision li").last().scrollIntoViewIfNeeded();
-await animada.waitForFunction(() => document.querySelector(".mision li:last-child").classList.contains("visible"));
+await animada.locator(".pilares li").last().scrollIntoViewIfNeeded();
+await animada.waitForFunction(() => document.querySelector(".pilares li:last-child").classList.contains("visible"));
 ok(true, "movimiento: el contenido aparece al entrar en pantalla");
 await movimiento.close();
 
@@ -180,7 +180,7 @@ const sinMovimiento = await reducido.newPage();
 await sinMovimiento.goto(pathToFileURL(join(raiz, "index.html")).href);
 ok(await sinMovimiento.locator(".hero-titulo .linea > span").first().evaluate((el) => getComputedStyle(el).animationName === "none"), "movimiento reducido: el título no se desplaza");
 ok(await sinMovimiento.locator(".hero-fotos img.activa").evaluate((el) => getComputedStyle(el).animationName === "none"), "movimiento reducido: la foto no hace zoom");
-ok(await sinMovimiento.locator(".mision li").first().evaluate((el) => getComputedStyle(el).opacity === "1"), "movimiento reducido: el contenido es visible");
+ok(await sinMovimiento.locator(".pilares li").first().evaluate((el) => getComputedStyle(el).opacity === "1"), "movimiento reducido: el contenido es visible");
 await reducido.close();
 
 await navegador.close();

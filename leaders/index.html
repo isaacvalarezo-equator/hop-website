@@ -69,6 +69,7 @@ label.chk{display:flex;gap:8px;align-items:center;font-weight:700}
 .form-foot{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .msg{font-weight:700}
 .msg.err{color:var(--heart)}
+.msg.ok{color:#14532d}
 
 /* Hearts grid */
 .sec-head{display:grid;gap:4px}
@@ -103,6 +104,9 @@ label.chk{display:flex;gap:8px;align-items:center;font-weight:700}
 
 .tbl-wrap{overflow-x:auto;background:var(--card);border-radius:10px}
 table{border-collapse:collapse;width:100%;min-width:720px}
+table.tbl-pts{min-width:0}
+.tbl-pts td:first-child{white-space:nowrap;font-size:13px}
+@media (max-width:520px){.tbl-pts th,.tbl-pts td{padding:10px 8px}.tbl-pts td:first-child{font-size:12px}}
 th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:middle}
 th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
 td.r,th.r{text-align:right}
@@ -141,6 +145,25 @@ tr:last-child td{border-bottom:0}
 .backup.off{color:var(--heart);font-size:13px}
 .spotline{text-align:left;margin:-6px 0 0}
 .hc .spot{font-size:11px;color:var(--muted);font-weight:700}
+/* Participation points */
+.pts-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.pts-sum{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none}
+.pts-sum li{background:var(--card);border-radius:999px;padding:6px 12px;font-weight:700;font-size:13px}
+.pts-sum b{color:var(--heart)}
+label.f textarea{min-height:88px;resize:vertical;font-family:inherit}
+.f-wide{grid-column:1/-1}
+.hint{font-weight:600;font-size:12px;color:var(--muted)}
+.st{display:inline-block;border-radius:999px;padding:2px 10px;font-size:12px;font-weight:800}
+.st-pending{background:#fff4cc;color:#5c4400}
+.st-approved{background:#dff3e4;color:#14532d}
+.st-rejected{background:#f3f3f3;color:#4b4952}
+.mentor{display:grid;gap:12px}
+.mentor .entry{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:14px;display:grid;gap:8px}
+.mentor .files{display:flex;flex-wrap:wrap;gap:6px 14px}
+.pts-meta{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;margin-top:4px}
+.mentor .entry p{margin:0}
+.mentor .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.mentor input[type=number]{width:90px;min-height:40px;border:1px solid var(--line);border-radius:10px;padding:6px 10px;font-size:16px}
 
 .status{font-size:13px;color:var(--muted);font-weight:600}
 .status.off{color:var(--heart)}
@@ -247,6 +270,7 @@ tr:last-child td{border-bottom:0}
       <button class="tab" role="tab" id="tab-gifts" aria-selected="true" aria-controls="pane-gifts" type="button">Donations</button>
       <button class="tab" role="tab" id="tab-out" aria-selected="false" aria-controls="pane-out" type="button">Outreach board</button>
       <button class="tab" role="tab" id="tab-ev" aria-selected="false" aria-controls="pane-ev" type="button">By event</button>
+      <button class="tab" role="tab" id="tab-pts" aria-selected="false" aria-controls="pane-pts" type="button">Points</button>
     </div>
     <div class="filter-note" id="filterNote" hidden><span id="filterTxt"></span><button class="btn btn-ghost" id="clearFilter" type="button" style="padding:4px 12px">Show everyone</button></div>
 
@@ -263,6 +287,53 @@ tr:last-child td{border-bottom:0}
     </div>
     <div id="pane-ev" role="tabpanel" hidden>
       <div class="events" id="events"></div>
+    </div>
+    <div id="pane-pts" role="tabpanel" hidden style="display:grid;gap:14px">
+      <div class="pts-head">
+        <button class="btn btn-heart" id="openPts" type="button">Log a task</button>
+        <button class="btn btn-ghost" id="openMentor" type="button">Mentor review</button>
+      </div>
+      <p class="hint" style="margin:0">Points count once a mentor approves the task. Photos, videos and what you wrote are only seen by mentors.</p>
+      <ul class="pts-sum" id="ptsSum"></ul>
+
+      <form class="panel" id="ptsForm" hidden>
+        <h3>Log a task for participation points</h3>
+        <div class="fgrid">
+          <label class="f">Name<select id="p-leader" required></select></label>
+          <label class="f">If you worked with anyone, who was it?<input id="p-partners" maxlength="200" placeholder="Names, or leave empty"></label>
+          <label class="f f-wide">What was the task you completed?<select id="p-task" required></select></label>
+          <label class="f">How long did it take you? (minutes)<input id="p-minutes" type="number" min="1" max="1440" step="1" required inputmode="numeric" placeholder="45"></label>
+          <label class="f">Date<input id="p-date" type="date" required></label>
+          <label class="f f-wide">What did you learn?<textarea id="p-learned" required maxlength="1000"></textarea></label>
+          <label class="f f-wide">If you did this again, what would you do differently?<textarea id="p-diff" required maxlength="1000"></textarea></label>
+          <label class="f f-wide">Picture, video or other media (up to 3 files, 8 MB each)<input id="p-files" type="file" multiple accept="image/jpeg,image/png,image/webp,image/heic,image/heif,video/mp4,video/quicktime"></label>
+          <label class="f f-wide">Or a link to it (TikTok, Instagram, Google Drive)<input id="p-link" type="url" maxlength="300" placeholder="https://"></label>
+          <label class="f">Team code<input id="p-code" class="code" autocomplete="off" required placeholder="Ask your mentor"></label>
+        </div>
+        <div class="form-foot">
+          <button class="btn btn-heart" type="submit">Send for review</button>
+          <button class="btn btn-ghost" type="button" data-close="ptsForm">Cancel</button>
+          <span class="msg" id="ptsMsg" role="status"></span>
+        </div>
+      </form>
+
+      <section class="panel mentor" id="mentorPanel" hidden aria-labelledby="mentor-title">
+        <h3 id="mentor-title">Mentor review</h3>
+        <form class="row" id="mentorLogin">
+          <label class="f">Mentor code<input id="m-code" class="code" autocomplete="off" required></label>
+          <button class="btn btn-sky" type="submit">Open the queue</button>
+          <button class="btn btn-ghost" type="button" data-close="mentorPanel">Close</button>
+        </form>
+        <span class="msg" id="mentorMsg" role="status"></span>
+        <div id="mentorQueue" class="mentor"></div>
+      </section>
+
+      <div class="tbl-wrap">
+        <table class="tbl-pts">
+          <thead><tr><th>Date</th><th>Leader</th><th>Task</th><th class="r">Points</th></tr></thead>
+          <tbody id="ptsRows"></tbody>
+        </table>
+      </div>
     </div>
   </section>
   <details class="guide" id="guide">
@@ -287,7 +358,7 @@ tr:last-child td{border-bottom:0}
     <ul>
       <li>The team code comes from your mentor. Do not share it outside the team.</li>
       <li>Do not write phone numbers or emails in notes. Anyone with this link can read them.</li>
-      <li>Coming soon: participation points, so you can log the tasks you complete and your mentor can approve them.</li>
+      <li><b>Participation points.</b> In the Points tab, log each task you complete: who you worked with, how long it took, what you learned, what you would do differently, and a photo, video or link. A mentor approves it and the points count. Each contact you log in Outreach also shows up there for a mentor to approve.</li>
     </ul>
   </details>
   <p class="backup" id="backupLine" hidden></p>
@@ -297,7 +368,7 @@ tr:last-child td{border-bottom:0}
 <script>
 const EVENTS=["Individual leader effort","Spotfund","Company sponsorship","In-kind donation","Giving Tuesday","Instagram Bingo","Speed Networking","Giveback night","Leader donation","Grant","Other"];
 const STAT={contacted:"Contacted",waiting:"Waiting on reply",yes:"Said yes!",no:"Said no"};
-const state={leaders:[],goal:2000,gifts:[],out:[],editNext:null,nextDraft:"",lastBackup:"",spot:{stories:[],readAt:"",error:"",stale:false},filter:null,tab:"gifts",db:null,canWrite:true,loaded:{s:false,g:false,o:false}};
+const state={leaders:[],goal:2000,gifts:[],out:[],editNext:null,nextDraft:"",lastBackup:"",spot:{stories:[],readAt:"",error:"",stale:false},tasks:[],parts:[],filter:null,tab:"gifts",db:null,canWrite:true,loaded:{s:false,g:false,o:false}};
 const $=id=>document.getElementById(id);
 const money=n=>"$"+Number(n||0).toLocaleString("en-US",{maximumFractionDigits:2,minimumFractionDigits:Number(n)%1?2:0});
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -391,6 +462,7 @@ function render(){
       <div style="display:flex;gap:6px;align-items:center;justify-content:space-between"><select data-move="${esc(o.id)}" aria-label="Change status">${Object.entries(STAT).map(([v,t])=>`<option value="${v}" ${v===o.status?"selected":""}>${t}</option>`).join("")}</select>
       <button type="button" class="x" data-odel="${esc(o.id)}" aria-label="Delete">Delete</button></div></div>`).join("")||`<div class="status">Nothing here yet</div>`}</div>`;
   }).join("");
+  renderPoints();
   const sp=state.spot||{},hasSpot=(sp.stories||[]).length>0;
   $("spotLine").hidden=!hasSpot;
   if(hasSpot){
@@ -419,7 +491,7 @@ function confetti(){
 
 // Backend: a Google Apps Script web app over a Google Sheet (see apps-script/Code.gs)
 const API=(window.HEART_METER_CONFIG||{}).scriptUrl||"";
-const ERR={wrong_code:"That team code is not right. Ask your mentor.",paused:"Too many wrong codes. Saving is paused for 10 minutes.",unknown_leader:"Pick your name from the list.",bad_amount:"Enter an amount above $0.",bad_status:"Pick a status.",need_next_step:"Write the next step for this contact.",not_found:"Someone already changed that. Refreshing.",network:"Could not reach the tracker. Check your connection and try again."};
+const ERR={wrong_code:"That team code is not right. Ask your mentor.",paused:"Too many wrong codes. Saving is paused for 10 minutes.",unknown_leader:"Pick your name from the list.",bad_amount:"Enter an amount above $0.",bad_status:"Pick a status.",need_next_step:"Write the next step for this contact.",not_found:"Someone already changed that. Refreshing.",network:"Could not reach the tracker. Check your connection and try again.",unknown_task:"Pick a task from the list.",bad_minutes:"Enter how many minutes it took (1 to 1440).",need_reflection:"Write what you learned and what you would do differently.",bad_link:"Paste a full link that starts with https://",too_many_files:"Up to 3 files.",bad_file_type:"Photos (JPG, PNG, HEIC) or videos (MP4, MOV) only.",file_too_big:"Each file must be 8 MB or less. For a longer video, paste a link instead.",bad_file:"One of the files could not be read. Try again.",wrong_mentor_code:"That mentor code is not right.",points_not_set:"This task has no points yet. Type the points before approving.",bad_points:"Points must be between 0 and 1000."};
 function getCode(){try{return localStorage.getItem("hm-code")||""}catch(e){return ""}}
 function saveCode(c){try{localStorage.setItem("hm-code",c)}catch(e){}}
 async function load(){
@@ -428,7 +500,7 @@ async function load(){
     const r=await fetch(API,{cache:"no-store"});const d=await r.json();
     if(!d.ok)throw new Error("bad");
     state.leaders=d.settings.leaders||[];state.goal=Number(d.settings.goal)||2000;
-    state.gifts=d.donations||[];state.out=d.outreach||[];state.lastBackup=d.lastBackup||"";state.spot=d.spotfund||{stories:[],readAt:"",error:"",stale:false};
+    state.gifts=d.donations||[];state.out=d.outreach||[];state.lastBackup=d.lastBackup||"";state.spot=d.spotfund||{stories:[],readAt:"",error:"",stale:false};state.tasks=d.tasks||[];state.parts=d.participation||[];
     state.loaded={s:true,g:true,o:true};
     const spotBad=(state.spot.stories||[]).length>0&&(state.spot.error||state.spot.stale);
     setStatus((spotBad?"Spotfund out of date · ":"Up to date · ")+new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"}),spotBad);render();
@@ -442,6 +514,41 @@ async function send(payload){
   }catch(e){return {ok:false,error:"network"};}
 }
 
+function renderPoints(){
+  const taskOpts=`<option value="" disabled selected>Pick a task</option>`+state.tasks.map(t=>`<option value="${esc(t.task)}">${esc(t.task)}${t.points==null?"":` (${t.points} pts)`}</option>`).join("");
+  const ts=$("p-task");const tv=ts.value;ts.innerHTML=taskOpts;if(tv&&state.tasks.some(t=>t.task===tv))ts.value=tv;
+  const ls=$("p-leader");let lv=ls.value;if(!lv){try{lv=localStorage.getItem("hm-leader")||""}catch(e){}}
+  ls.innerHTML=`<option value="" disabled selected>Pick your name</option>`+state.leaders.map(l=>`<option>${esc(l)}</option>`).join("");if(lv&&state.leaders.includes(lv))ls.value=lv;
+  const pts={};state.leaders.forEach(l=>pts[l]=0);
+  state.parts.forEach(p=>{if(p.status==="approved"&&pts[p.leader]!=null)pts[p.leader]+=Number(p.points)||0;});
+  // Alphabetical on purpose: no public ranking of minors.
+  $("ptsSum").innerHTML=state.leaders.slice().sort((a,b)=>a.localeCompare(b)).map(l=>`<li>${esc(l)} <b class="num">${pts[l]}</b> pts</li>`).join("");
+  const short=d=>{const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(d||"");return m?new Date(+m[1],+m[2]-1,+m[3]).toLocaleDateString("en-US",{month:"short",day:"numeric"}):d||"";};
+  const rows=state.parts.filter(p=>!state.filter||p.leader===state.filter).sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+  const ST={pending:"Waiting for a mentor",approved:"Approved",rejected:"Not approved"};
+  $("ptsRows").innerHTML=rows.length?rows.map(p=>`<tr><td class="num">${esc(short(p.date))}</td><td><b>${esc(p.leader)}</b></td><td>${esc(p.task)}<div class="pts-meta"><span class="st st-${esc(p.status)}">${ST[p.status]||esc(p.status)}</span>${p.partners?`<span class="status">with ${esc(p.partners)}</span>`:""}${p.minutes?`<span class="status">${esc(p.minutes)} min</span>`:""}${p.media?`<span class="status">${p.media} attachment${p.media>1?"s":""}</span>`:""}</div></td><td class="r num"><b>${p.status==="approved"?esc(p.points):"-"}</b></td></tr>`).join("")
+    :`<tr><td colspan="4" class="empty">No tasks logged yet. Tap “Log a task” to send your first one.</td></tr>`;
+}
+const toB64=f=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(",")[1]||"");r.onerror=()=>rej(r.error);r.readAsDataURL(f);});
+let mentorCode="";
+async function loadQueue(){
+  const res=await send({action:"mentor_queue",mentorCode});
+  const m=$("mentorMsg");
+  if(!res.ok){m.textContent=ERR[res.error]||ERR.network;m.className="msg err";$("mentorQueue").innerHTML="";return;}
+  m.textContent="";m.className="msg";
+  const pend=res.entries.filter(e=>e.status==="pending");
+  const pts=Object.fromEntries(state.tasks.map(t=>[t.task,t.points]));
+  $("mentorQueue").innerHTML=pend.length?pend.map(e=>`<div class="entry">
+    <p><b>${esc(e.leader)}</b> · ${esc(e.date)} · ${esc(e.task)}${e.minutes?` · ${esc(e.minutes)} min`:""}${e.partners?` · with ${esc(e.partners)}`:""}</p>
+    ${e.learned?`<p><b>Learned:</b> ${esc(e.learned)}</p>`:""}${e.differently?`<p><b>Would do differently:</b> ${esc(e.differently)}</p>`:""}
+    ${e.reviewNote==="from outreach"?`<p class="hint">Logged from the Outreach board.</p>`:""}
+    ${(e.media||[]).length||e.link?`<p class="files">${(e.media||[]).map((u,i)=>`<a href="${esc(u)}" target="_blank" rel="noopener">Open file ${i+1}</a>`).join("")}${e.link?`<a href="${esc(e.link)}" target="_blank" rel="noopener noreferrer">Open link</a>`:""}</p>`:""}
+    <div class="row"><label class="hint">Points <input type="number" min="0" max="1000" step="1" data-pts="${esc(e.id)}" value="${pts[e.task]==null?"":esc(pts[e.task])}" placeholder="set"></label>
+    <button type="button" class="btn btn-heart" data-review="approved" data-rid="${esc(e.id)}">Approve</button>
+    <button type="button" class="btn btn-ghost" data-review="rejected" data-rid="${esc(e.id)}">Not approved</button></div></div>`).join("")
+    :`<p class="hint">Nothing waiting for review.</p>`;
+}
+
 // UI wiring
 $("g-event").innerHTML=EVENTS.map(e=>`<option>${e}</option>`).join("");
 $("g-date").value=today();
@@ -449,6 +556,33 @@ $("g-date").value=today();
 function openForm(show,hide,first){$(hide).hidden=true;$(show).hidden=false;$(show).scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"});setTimeout(()=>$(first).focus({preventScroll:true}),350);}
 $("openGift").onclick=()=>openForm("giftForm","outForm","g-leader");
 $("openOut").onclick=()=>openForm("outForm","giftForm","o-leader");
+$("openPts").onclick=()=>{$("mentorPanel").hidden=true;$("ptsForm").hidden=false;$("p-date").value=$("p-date").value||today();if(!$("p-code").value)$("p-code").value=getCode();$("ptsForm").scrollIntoView({block:"start"});setTimeout(()=>$("p-leader").focus({preventScroll:true}),300);};
+$("openMentor").onclick=()=>{$("ptsForm").hidden=true;$("mentorPanel").hidden=false;$("m-code").focus();};
+$("mentorLogin").addEventListener("submit",async e=>{e.preventDefault();mentorCode=$("m-code").value.trim();$("mentorMsg").textContent="Loading…";await loadQueue();});
+$("mentorQueue").addEventListener("click",async e=>{
+  const b=e.target.closest("[data-review]");if(!b)return;
+  const id=b.dataset.rid,inp=document.querySelector(`[data-pts="${CSS.escape(id)}"]`);
+  b.disabled=true;
+  const res=await send({action:"review",mentorCode,id,decision:b.dataset.review,points:inp&&inp.value!==""?Number(inp.value):""});
+  if(!res.ok){$("mentorMsg").textContent=ERR[res.error]||ERR.network;$("mentorMsg").className="msg err";b.disabled=false;return;}
+  await loadQueue();load();
+});
+$("ptsForm").addEventListener("submit",async e=>{
+  e.preventDefault();const m=$("ptsMsg");const btn=e.submitter||$("ptsForm").querySelector("[type=submit]");
+  const files=[...$("p-files").files];
+  if(files.length>3){m.textContent=ERR.too_many_files;m.className="msg err";return;}
+  if(files.some(f=>f.size>8*1024*1024)){m.textContent=ERR.file_too_big;m.className="msg err";return;}
+  btn.disabled=true;m.textContent=files.length?"Uploading…":"Sending…";m.className="msg";
+  let media=[];
+  try{media=await Promise.all(files.map(async f=>({type:f.type,data:await toB64(f)})));}catch(err){m.textContent=ERR.bad_file;m.className="msg err";btn.disabled=false;return;}
+  const code=$("p-code").value.trim(),leader=$("p-leader").value;
+  const res=await send({action:"add_participation",code,leader,partners:$("p-partners").value,task:$("p-task").value,minutes:$("p-minutes").value,date:$("p-date").value,learned:$("p-learned").value,differently:$("p-diff").value,link:$("p-link").value.trim(),media});
+  btn.disabled=false;
+  if(!res.ok){m.textContent=ERR[res.error]||ERR.network;m.className="msg err";return;}
+  saveCode(code);try{localStorage.setItem("hm-leader",leader)}catch(err){}
+  ["p-partners","p-minutes","p-learned","p-diff","p-link"].forEach(id=>$(id).value="");$("p-files").value="";
+  m.textContent="Sent. A mentor will review it.";m.className="msg ok";load();
+});
 document.querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>$(b.dataset.close).hidden=true);
 $("clearFilter").onclick=()=>{state.filter=null;render();};
 $("hearts").onclick=e=>{const b=e.target.closest("[data-leader]");if(!b)return;const l=b.dataset.leader;state.filter=state.filter===l?null:l;render();};

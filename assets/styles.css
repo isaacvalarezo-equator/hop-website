@@ -640,7 +640,7 @@ address { font-style: normal; }
 .js .frase-grande[data-listo] .palabra.encendida { color: var(--tinta); }
 .js .frase-grande[data-listo] .palabra.encendida.acento { color: var(--rojo-texto); }
 
-.mision {
+.pilares {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -649,9 +649,9 @@ address { font-style: normal; }
   grid-template-columns: repeat(auto-fit, minmax(min(16rem, 100%), 1fr));
   counter-reset: none;
 }
-.mision li { border-top: 2px solid var(--tinta); padding-top: 1.25rem; position: relative; }
-.mision .numero { display: block; font-weight: 800; font-size: 0.875rem; letter-spacing: 0.1em; color: var(--rojo-texto); margin-bottom: 0.75rem; }
-.mision .display { font-size: clamp(1.6rem, 1.2rem + 1.4vw, 2.4rem); text-transform: uppercase; margin-bottom: 0.4rem; }
+.pilares li { border-top: 2px solid var(--tinta); padding-top: 1.25rem; position: relative; }
+.pilares .numero { display: block; font-weight: 800; font-size: 0.875rem; letter-spacing: 0.1em; color: var(--rojo-texto); margin-bottom: 0.75rem; }
+.pilares .display { font-size: clamp(1.6rem, 1.2rem + 1.4vw, 2.4rem); text-transform: uppercase; margin-bottom: 0.4rem; }
 
 /* ---------- Banda de foto ---------- */
 
@@ -673,15 +673,15 @@ address { font-style: normal; }
 
 /* ---------- Historia ---------- */
 
-.historia { display: grid; gap: clamp(2rem, 1rem + 4vw, 5rem); align-items: center; }
-@media (min-width: 56rem) { .historia { grid-template-columns: 1fr 1.1fr; } }
-.historia-foto { margin: 0; position: relative; }
-.historia-foto img { width: 100%; border-radius: var(--radio); aspect-ratio: 4 / 5; object-fit: cover; object-position: 40% 50%; }
-.historia-foto::after { content: ""; position: absolute; inset: auto -0.9rem -0.9rem auto; width: 45%; height: 45%; border: 3px solid var(--celeste); border-radius: var(--radio); z-index: -1; }
-.historia-foto { isolation: isolate; }
-.cita { margin: 2rem 0; padding: 0 0 0 1.5rem; border-left: 4px solid var(--rojo); }
-.cita p { font-size: clamp(1.15rem, 1rem + 0.6vw, 1.45rem); font-weight: 600; line-height: 1.45; color: var(--tinta); margin-bottom: 0.75rem; }
-.cita footer { font-size: 0.875rem; color: var(--tinta-suave); }
+.relato { display: grid; gap: clamp(2rem, 1rem + 4vw, 5rem); align-items: center; }
+@media (min-width: 56rem) { .relato { grid-template-columns: 1fr 1.1fr; } }
+.relato-foto { margin: 0; position: relative; }
+.relato-foto img { width: 100%; border-radius: var(--radio); aspect-ratio: 4 / 5; object-fit: cover; object-position: 40% 50%; }
+.relato-foto::after { content: ""; position: absolute; inset: auto -0.9rem -0.9rem auto; width: 45%; height: 45%; border: 3px solid var(--celeste); border-radius: var(--radio); z-index: -1; }
+.relato-foto { isolation: isolate; }
+.cita-fundadora { margin: 2rem 0; padding: 0 0 0 1.5rem; border-left: 4px solid var(--rojo); }
+.cita-fundadora p { font-size: clamp(1.15rem, 1rem + 0.6vw, 1.45rem); font-weight: 600; line-height: 1.45; color: var(--tinta); margin-bottom: 0.75rem; }
+.cita-fundadora footer { font-size: 0.875rem; color: var(--tinta-suave); }
 
 /* ---------- Cifras ---------- */
 
@@ -773,8 +773,8 @@ a.tarjeta:focus-visible::before { transform: scaleX(1); }
   @keyframes llegar { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
   .cierre-emblema { animation: latido 2.4s ease-in-out infinite; }
   @keyframes latido { 0%, 100% { scale: 1; } 12% { scale: 1.04; } 24% { scale: 1; } 36% { scale: 1.03; } }
-  .js .mision li::before { content: ""; position: absolute; left: 0; top: -2px; height: 2px; width: 100%; background: var(--rojo); transform: scaleX(0); transform-origin: left; transition: transform 900ms var(--ease-suave) 200ms; }
-  .js .mision li.visible::before { transform: scaleX(1); }
+  .js .pilares li::before { content: ""; position: absolute; left: 0; top: -2px; height: 2px; width: 100%; background: var(--rojo); transform: scaleX(0); transform-origin: left; transition: transform 900ms var(--ease-suave) 200ms; }
+  .js .pilares li.visible::before { transform: scaleX(1); }
 }
 @media (prefers-reduced-motion: reduce) {
   .hero-fotos img { transition: none; }

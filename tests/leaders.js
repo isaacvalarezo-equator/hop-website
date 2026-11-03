@@ -38,8 +38,8 @@ function fakeGoogle(teamCode,preset){
   const cache={};let uuid=0;
   const props={TEAM_CODE:teamCode};
   // Fake Drive: one backups folder whose files can be copied in and trashed.
-  const drive={folders:[],copies:[],clock:0};
-  const mkFolder=name=>{const f={name,files:[],getFiles(){const live=f.files.filter(x=>!x.trashed);let i=0;return {hasNext:()=>i<live.length,next:()=>live[i++]}}};drive.folders.push(f);return f};
+  const drive={folders:[],copies:[],created:[],clock:0};
+  const mkFolder=name=>{const f={name,files:[],createFile:b=>{const c={blob:b,getId:()=>"file"+(++drive.clock)};drive.created.push(c);f.files.push(c);return c},getFiles(){const live=f.files.filter(x=>!x.trashed);let i=0;return {hasNext:()=>i<live.length,next:()=>live[i++]}}};drive.folders.push(f);return f};
   const triggers=[];
   const spot={code:200,body:"",calls:0};
   const ctx={sheets,console,props,drive,triggers,spot,
@@ -54,7 +54,7 @@ function fakeGoogle(teamCode,preset){
     PropertiesService:{getScriptProperties:()=>({getProperty:k=>props[k]==null?null:props[k],setProperty:(k,v)=>{props[k]=v}})},
     CacheService:{getScriptCache:()=>({get:k=>cache[k]||null,put:(k,v)=>{cache[k]=v}})},
     LockService:{getScriptLock:()=>({waitLock(){},releaseLock(){}})},
-    Utilities:{getUuid:()=>"id"+(++uuid),formatDate:()=> "2026-10-19"}};
+    Utilities:{getUuid:()=>"id"+(++uuid),formatDate:()=> "2026-10-19",base64Decode:t=>{if(!/^[A-Za-z0-9+/=]*$/.test(t))throw new Error("bad");return [...Buffer.from(t,"base64")]},newBlob:(bytes,type,name)=>({bytes,type,name})}};
   vm.createContext(ctx);vm.runInContext(fs.readFileSync("backend/Code.gs","utf8"),ctx);
   ctx.get=()=>JSON.parse(ctx.doGet().text);
   ctx.post=b=>JSON.parse(ctx.doPost({postData:{contents:JSON.stringify(b)}}).text);
@@ -231,4 +231,44 @@ try{
   const g2=fakeGoogle(C);
   ok(g2.get().spotfund.stories.length===0&&g2.get().spotfund.readAt==="","with no Spotfund links and no read, the page gets an empty Spotfund block");
 }catch(e){ok(false,"Spotfund test crashed: "+e.message)}
+
+// Participation points: Emily's form, mentor approval, private media, points only once approved
+try{
+  const C="Secret-Code",M="Mentor-9";const g=fakeGoogle(C);g.props.MENTOR_CODE=M;
+  const ok1={action:"add_participation",code:C,leader:"Kate",partners:"Ava",task:"Run a fundraiser",minutes:90,learned:"How to ask",differently:"Start earlier"};
+  let r=g.get();
+  ok(r.tasks.length===17&&r.tasks.every(t=>t.points===null),"with no Tasks tab the page gets Savannah's 17 tasks, all without points");
+  ok(g.post({...ok1,task:"Made up task"}).error==="unknown_task","a task that is not on the list is rejected");
+  ok(g.post({...ok1,minutes:0}).error==="bad_minutes"&&g.post({...ok1,minutes:2000}).error==="bad_minutes","time must be between 1 minute and 24 hours");
+  ok(g.post({...ok1,learned:" "}).error==="need_reflection"&&g.post({...ok1,differently:""}).error==="need_reflection","what you learned and what you would change are required");
+  ok(g.post({...ok1,link:"javascript:alert(1)"}).error==="bad_link","only https links are accepted");
+  ok(g.post({...ok1,media:[{type:"application/pdf",data:"aGk="}]}).error==="bad_file_type","a file that is not a photo or video is rejected");
+  ok(g.post({...ok1,media:[{type:"image/jpeg",data:"aGk="},{type:"image/jpeg",data:"aGk="},{type:"image/jpeg",data:"aGk="},{type:"image/jpeg",data:"aGk="}]}).error==="too_many_files","more than 3 files is rejected");
+  ok(g.post({...ok1,media:[{type:"image/jpeg",data:"aGk="},{type:"video/mp4",data:"%%%"}]}).error==="bad_file"&&g.drive.created.length===0,"one bad file rejects the entry and saves no file at all");
+  ok(!g.sheets.Participation||g.sheets.Participation.rows.length<=1,"rejected entries leave no row");
+  r=g.post({...ok1,media:[{type:"image/jpeg",data:"aGk="}],link:"https://www.tiktok.com/@hop/video/1"});
+  ok(r.ok&&g.drive.created.length===1&&g.drive.folders.some(f=>f.name==="HoP Participation media"),"a valid entry saves its photo in the private media folder");
+  let pg=g.get().participation[0];
+  ok(pg.status==="pending"&&pg.points===0&&pg.media===2,"a new entry is pending, counts 0 points, and shows how many files and links it has");
+  ok(pg.learned===undefined&&pg.differently===undefined&&pg.link===undefined,"the page for everyone never gets the reflections or the media");
+  ok(g.post({action:"mentor_queue",code:C,mentorCode:"nope"}).error==="wrong_mentor_code","the team code alone cannot open the mentor queue");
+  const q=g.post({action:"mentor_queue",mentorCode:M});
+  ok(q.ok&&q.entries[0].learned==="How to ask"&&q.entries[0].media[0].startsWith("https://drive.google.com/file/d/"),"the mentor queue has the reflections and the media links");
+  ok(g.post({action:"review",mentorCode:M,id:r.id,decision:"approved"}).error==="points_not_set","approving a task with no points set asks for a number instead of inventing one");
+  ok(g.post({action:"review",mentorCode:M,id:r.id,decision:"approved",points:-5}).error==="bad_points","negative points are rejected");
+  ok(g.post({action:"review",mentorCode:M,id:r.id,decision:"approved",points:15}).ok&&g.get().participation[0].points===15&&g.get().participation[0].status==="approved","a mentor approves with points and they count");
+  const lg=g.sheets.Log.rows.filter(x=>x[1]==="review").pop();
+  ok(lg&&lg[4].includes("pending"),"the review is in the Log with the entry as it was before");
+  g.sheets.Tasks.rows.push(["Run a fundraiser",10]);
+  const r2=g.post({...ok1});
+  ok(g.post({action:"review",mentorCode:M,id:r2.id,decision:"approved"}).ok&&g.get().participation.find(x=>x.id===r2.id).points===10,"with no number given, approval uses the task's points from the Tasks tab");
+  ok(g.post({action:"review",mentorCode:M,id:r2.id,decision:"rejected"}).ok&&g.get().participation.find(x=>x.id===r2.id).points===0,"a rejected entry counts 0 points");
+  ok(g.post({action:"review",mentorCode:M,id:"nope",decision:"approved",points:1}).error==="not_found","reviewing a missing entry says not_found");
+  const n=g.get().participation.length;
+  g.post({action:"add_outreach",code:C,leader:"Ella",org:"Shop",status:"contacted",nextStep:"Call Tuesday"});
+  const auto=g.get().participation.filter(x=>x.leader==="Ella");
+  ok(g.get().participation.length===n+1&&auto[0].task==="Contact/pitch potential sponsor/partner"&&auto[0].status==="pending","logging outreach also creates a pending participation entry");
+  const g3=fakeGoogle(C);
+  ok(g3.post({action:"mentor_queue",mentorCode:""}).error==="wrong_mentor_code","with no MENTOR_CODE set, nobody opens the mentor queue");
+}catch(e){ok(false,"participation test crashed: "+e.message)}
 console.log(fails?`\n${fails} check(s) failed`:"\nall checks passed");process.exit(fails?1:0);

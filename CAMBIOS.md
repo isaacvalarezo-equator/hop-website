@@ -33,3 +33,23 @@
 **Verificación**: `node tests/sitio.mjs` → 669/669 checks ok, con la auditoría ajustada para cargar las fotos diferidas y revisar el movimiento del hero nuevo. `node tests/leaders.js` → all checks passed.
 
 **Pendiente**: no miré las capturas del inicio nuevo. Están en el scratchpad de la sesión: Isaac debe abrir `index.html` y revisarlo. Las otras 4 páginas todavía no tienen fotos. No hay commit de este cambio.
+
+## 2026-11-03 · Claude Code (Opus 5.5) · participation points (pedido de Emily Harris)
+
+**Qué se hizo**: el sitio de participation points que pidió Emily el 1 nov ya existe, como pestaña **Points** del Heart Meter (`/leaders/`).
+- Formulario con los campos de Emily, en su orden: nombre, con quién trabajó, qué tarea hizo, cuánto tardó (minutos), qué aprendió, qué haría distinto, y foto o video (hasta 3 archivos de 8 MB) o un link.
+- Las tareas son las 17 de la hoja "Participation Points" de Savannah. Sus puntos están vacíos, así que el sistema no inventa ninguno: el mentor escribe los puntos al aprobar, o se toman de la pestaña `Tasks` cuando Savannah los llene.
+- Revisión de mentor con un `MENTOR_CODE` distinto del código de equipo. El mentor ve qué aprendió el leader, qué haría distinto y los archivos, y aprueba o rechaza. Los puntos solo cuentan aprobados. Cada revisión queda en el Log con la fila como estaba antes.
+- Fotos y videos van a la carpeta privada de Drive "HoP Participation media". La página para todos solo muestra "1 attachment", nunca el archivo ni las reflexiones.
+- Cada contacto registrado en Outreach crea también una tarea pendiente de "Contact/pitch potential sponsor/partner".
+- El resumen de puntos va en orden alfabético, no como ranking, porque los leaders son menores.
+- La guía de la página ya explica la pestaña Points.
+- En el inicio del sitio se renombraron las clases nuevas (`pilares`, `relato`, `cita-fundadora`) porque chocaban con estilos viejos que tenían el mismo nombre.
+
+**Verificación**: `node tests/leaders.js` → all checks passed (115 checks; 23 nuevos de participation: tareas que no existen, tiempo fuera de rango, reflexiones obligatorias, solo links https, tipos y número de archivos, que un archivo malo no guarde ninguno, que la página pública no reciba reflexiones ni media, códigos de mentor, puntos sin definir, puntos negativos, aprobación, rechazo, Log y la tarea automática de outreach). `tests/movil.py` → all phone checks passed. `node tests/sitio.mjs` → 669/669 checks ok. Además se recorrió el flujo completo en un teléfono de 390 px contra un backend de prueba local: enviar con foto, rechazo del código de mentor equivocado, aprobar sin puntos (pide el número), aprobar con 3 puntos y verlos sumados. 14 de 14 ok y sin errores de consola. Sin desborde a 390 ni a 320 px.
+
+**No verificado**: la subida de archivos contra Google real (`DriveApp`, límite de tamaño del POST de Apps Script). Se prueba al publicar el backend con la cuenta de Isaac.
+
+**Despliegue**: nada. Para activarlo hay que pegar `backend/Code.gs` en Apps Script, correr `setup` (crea las pestañas Participation y Tasks), agregar `MENTOR_CODE` en Script Properties, desplegar una versión nueva y compartir la carpeta "HoP Participation media" con los mentores.
+
+**Pendiente**: que Savannah ponga los puntos de cada tarea; repartir el código de mentor a Emily, Paige y Savannah.

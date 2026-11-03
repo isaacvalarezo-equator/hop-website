@@ -11,6 +11,14 @@
  *   Settings:  key, value   (goal = 2000, leaders = comma separated names,
  *              spotfund = Leader=storyId|baseline, comma separated; see spotfundLinks_)
  *   Spotfund:  every fundraiser on HoP's public Spotfund organization page, as last read
+ *   Participation: id, createdAt, date, leader, partners, task, minutes, learned, differently,
+ *              link, mediaIds, status (pending/approved/rejected), points, reviewedAt, reviewNote
+ *   Tasks:     task, points   (the point value of each task; the Sheet owner fills it in)
+ *
+ * Participation needs two codes: TEAM_CODE to log a task, MENTOR_CODE (Script Properties)
+ * to see the full entries and approve them. Points count only once a mentor approves.
+ * Photos and videos go to the Drive folder "HoP Participation media", shared with nobody;
+ * the Sheet owner shares that folder with the mentors.
  *   Log:       every write, with the full row of anything deleted (audit trail)
  *
  * Security: writes need TEAM_CODE; after 25 wrong codes in 10 minutes all
@@ -34,6 +42,9 @@ const HEADERS = {
   Outreach: ['id', 'createdAt', 'date', 'leader', 'org', 'how', 'status', 'note', 'nextStep'],
   Settings: ['key', 'value'],
   Spotfund: ['storyId', 'title', 'owner', 'created', 'goal', 'raised', 'donors', 'readAt'],
+  Participation: ['id', 'createdAt', 'date', 'leader', 'partners', 'task', 'minutes', 'learned', 'differently',
+    'link', 'mediaIds', 'status', 'points', 'reviewedAt', 'reviewNote'],
+  Tasks: ['task', 'points'],
   Log: ['at', 'action', 'kind', 'id', 'detail'],
 };
 const DEFAULT_LEADERS = 'Ava, Bishop, Catherine, Ceci, Charlotte, Ella, Emerson, Kate, Lesley, Libby, Maddie, Maeve, Mary Claire, Philip, Sophie, Teresa, Yve';
@@ -43,6 +54,18 @@ const BACKUPS_KEPT = 200;
 const headersChecked_ = {};
 const SPOTFUND_ORG_URL = 'https://www.spotfund.com/organization/98892ab3-72e5-4cc5-84bd-b7df2ed5b1e1';
 const SPOTFUND_STALE_HOURS = 3;
+// Savannah's "Participation Points" sheet (Drive, HoP Nola 2027 - MENTORS), Oct 2026. Points are hers to set.
+const DEFAULT_TASKS = ['Run a fundraiser', 'Participate in a fundraiser', 'Submit a blog post',
+  'TikTok video', 'Attend group workshop', 'Attend committee meeting', 'Random Acts of Kindness',
+  'Contact/pitch potential sponsor/partner', 'Tell someone about HoP', 'Post something unique about HoP and tag HoP',
+  'Complete assignment on time', 'Talk to a board member', 'Volunteer to make the social media post about the big group meeting',
+  'Bonus points for responsiveness', 'Bonus points for providing encouragement', 'Submit mission/motivation Monday to the team',
+  'Do something social with three or more HoP leaders (from at least two schools)'];
+const OUTREACH_TASK = 'Contact/pitch potential sponsor/partner';
+const MEDIA_FOLDER = 'HoP Participation media';
+const MEDIA_MAX_FILES = 3;
+const MEDIA_MAX_BYTES = 8 * 1024 * 1024;
+const MEDIA_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif', 'video/mp4', 'video/quicktime'];
 
 function sheet_(name) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -108,6 +131,36 @@ function countWrongCode_() {
   c.put('wrong', String(Number(c.get('wrong') || 0) + 1), 600);
 }
 
+/** Task list with point values. A task with no number yet has points null: the page says "not set yet". */
+function tasks_() {
+  const rows = rows_('Tasks');
+  if (!rows.length) return DEFAULT_TASKS.map(t => ({ task: t, points: null }));
+  return rows.map(r => ({ task: String(r.task), points: r.points === '' || r.points == null ? null : Number(r.points) }));
+}
+
+/** What everyone with the link sees: no reflections, no media, only what a leader did and its status. */
+function participationForPage_() {
+  return rows_('Participation').map(r => ({
+    id: r.id, date: r.date, leader: r.leader, partners: r.partners, task: r.task, minutes: Number(r.minutes) || 0,
+    status: r.status, points: r.status === 'approved' ? Number(r.points) || 0 : 0,
+    media: String(r.mediaIds || '').split(',').filter(Boolean).length + (r.link ? 1 : 0),
+  }));
+}
+
+function mentorCodeOk_(body) {
+  const m = PropertiesService.getScriptProperties().getProperty('MENTOR_CODE');
+  return !!m && String(body.mentorCode == null ? '' : body.mentorCode).trim().toLowerCase() === String(m).trim().toLowerCase();
+}
+
+function addParticipation_(body, s, now, fromOutreach) {
+  const id = Utilities.getUuid();
+  sheet_('Participation').appendRow([id, now, date_(body.date), body.leader, clean_(body.partners, 200), body.task,
+    Number(body.minutes) || 0, clean_(body.learned, 1000), clean_(body.differently, 1000), clean_(body.link, 300),
+    (body.mediaIds || []).join(','), 'pending', '', '', fromOutreach ? 'from outreach' : '']);
+  log_('add', 'participation', id, { leader: body.leader, task: body.task });
+  return id;
+}
+
 function doGet() {
   const donations = rows_('Donations').map(d => Object.assign(d, {
     amount: Number(d.amount) || 0,
@@ -117,7 +170,7 @@ function doGet() {
   const lastBackup = PropertiesService.getScriptProperties().getProperty('lastBackupAt') || '';
   const st = settings_();
   return json_({ ok: true, settings: { goal: st.goal, leaders: st.leaders }, donations: donations, outreach: rows_('Outreach'),
-    lastBackup: lastBackup, spotfund: spotfundForPage_(st) });
+    lastBackup: lastBackup, spotfund: spotfundForPage_(st), tasks: tasks_(), participation: participationForPage_() });
 }
 
 function doPost(e) {
@@ -125,6 +178,10 @@ function doPost(e) {
   try { body = JSON.parse(e.postData.contents); } catch (err) { return json_({ ok: false, error: 'bad_request' }); }
 
   if (tooManyWrongCodes_()) return json_({ ok: false, error: 'paused' });
+  if (body.action === 'mentor_queue' || body.action === 'review') {
+    if (!mentorCodeOk_(body)) { countWrongCode_(); return json_({ ok: false, error: 'wrong_mentor_code' }); }
+    return mentor_(body);
+  }
   const code = PropertiesService.getScriptProperties().getProperty('TEAM_CODE');
   if (!code || String(body.code == null ? '' : body.code).trim().toLowerCase() !== String(code).trim().toLowerCase()) {
     countWrongCode_();
@@ -160,6 +217,37 @@ function doPost(e) {
       sheet_('Outreach').appendRow([id, now, date_(body.date), body.leader, clean_(body.org, 120),
         clean_(body.how, 40), body.status, clean_(body.note), nextStep]);
       log_('add', 'outreach', id, { leader: body.leader });
+      // Every contact is also a participation task, pending until a mentor approves it.
+      addParticipation_({ leader: body.leader, task: OUTREACH_TASK, partners: '', minutes: 0,
+        learned: '', differently: '', link: '', date: body.date, mediaIds: [] }, s, now, true);
+      return json_({ ok: true, id: id });
+    }
+
+    if (a === 'add_participation') {
+      if (s.leaders.indexOf(body.leader) < 0) return json_({ ok: false, error: 'unknown_leader' });
+      if (tasks_().map(t => t.task).indexOf(body.task) < 0) return json_({ ok: false, error: 'unknown_task' });
+      const minutes = Math.round(Number(body.minutes));
+      if (!(minutes >= 1 && minutes <= 1440)) return json_({ ok: false, error: 'bad_minutes' });
+      if (!clean_(body.learned) || !clean_(body.differently)) return json_({ ok: false, error: 'need_reflection' });
+      const link = clean_(body.link, 300);
+      if (link && !/^https:\/\/\S+$/.test(link)) return json_({ ok: false, error: 'bad_link' });
+      const files = Array.isArray(body.media) ? body.media : [];
+      if (files.length > MEDIA_MAX_FILES) return json_({ ok: false, error: 'too_many_files' });
+      // Check every file before saving any, so a bad file never leaves half an entry behind.
+      const blobs = [];
+      for (let i = 0; i < files.length; i++) {
+        const f = files[i] || {};
+        if (MEDIA_TYPES.indexOf(f.type) < 0) return json_({ ok: false, error: 'bad_file_type' });
+        let bytes;
+        try { bytes = Utilities.base64Decode(String(f.data || '')); } catch (err) { return json_({ ok: false, error: 'bad_file' }); }
+        if (!bytes.length || bytes.length > MEDIA_MAX_BYTES) return json_({ ok: false, error: 'file_too_big' });
+        blobs.push(Utilities.newBlob(bytes, f.type, clean_(body.leader + ' ' + date_(body.date) + ' ' + (i + 1), 80)));
+      }
+      const folders = DriveApp.getFoldersByName(MEDIA_FOLDER);
+      const folder = blobs.length ? (folders.hasNext() ? folders.next() : DriveApp.createFolder(MEDIA_FOLDER)) : null;
+      const mediaIds = blobs.map(b => folder.createFile(b).getId());
+      const id = addParticipation_({ leader: body.leader, partners: body.partners, task: body.task, minutes: minutes,
+        learned: body.learned, differently: body.differently, link: link, date: body.date, mediaIds: mediaIds }, s, now, false);
       return json_({ ok: true, id: id });
     }
 
@@ -310,9 +398,50 @@ function installSpotfund() {
   return spotfundSync();
 }
 
-/** Run once from the editor: creates the sheets and the 2027 roster. */
+/** Mentor actions: the full queue (with reflections and media links) and approving or rejecting. */
+function mentor_(body) {
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    if (body.action === 'mentor_queue') {
+      const rows = rows_('Participation').map(r => Object.assign(r, {
+        minutes: Number(r.minutes) || 0,
+        media: String(r.mediaIds || '').split(',').filter(Boolean).map(m => 'https://drive.google.com/file/d/' + m + '/view'),
+      }));
+      return json_({ ok: true, entries: rows });
+    }
+    const decision = body.decision;
+    if (decision !== 'approved' && decision !== 'rejected') return json_({ ok: false, error: 'bad_request' });
+    const sh = sheet_('Participation');
+    const ids = sh.getRange(1, 1, sh.getLastRow(), 1).getValues().map(r => r[0]);
+    const row = ids.indexOf(body.id) + 1;
+    if (row < 2) return json_({ ok: false, error: 'not_found' });
+    const col = n => HEADERS.Participation.indexOf(n) + 1;
+    const task = sh.getRange(row, col('task')).getValues()[0][0];
+    const def = tasks_().filter(t => t.task === task)[0];
+    let points = 0;
+    if (decision === 'approved') {
+      points = body.points === '' || body.points == null ? (def && def.points != null ? def.points : null) : Number(body.points);
+      if (points == null) return json_({ ok: false, error: 'points_not_set' });
+      if (!(points >= 0 && points <= 1000)) return json_({ ok: false, error: 'bad_points' });
+    }
+    const before = sh.getRange(row, 1, 1, sh.getLastColumn()).getValues()[0];
+    sh.getRange(row, col('status')).setValue(decision);
+    sh.getRange(row, col('points')).setValue(decision === 'approved' ? points : '');
+    sh.getRange(row, col('reviewedAt')).setValue(new Date().toISOString());
+    sh.getRange(row, col('reviewNote')).setValue(clean_(body.note, 300));
+    log_('review', 'participation', body.id, { decision: decision, points: points, before: before });
+    return json_({ ok: true });
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/** Run once from the editor: creates the sheets, the 2027 roster and the task list (points blank). */
 function setup() {
-  ['Donations', 'Outreach', 'Settings', 'Spotfund', 'Log'].forEach(sheet_);
+  ['Donations', 'Outreach', 'Settings', 'Spotfund', 'Participation', 'Tasks', 'Log'].forEach(sheet_);
+  const tk = sheet_('Tasks');
+  if (tk.getLastRow() < 2) DEFAULT_TASKS.forEach(t => tk.appendRow([t, '']));
   const sh = sheet_('Settings');
   if (sh.getLastRow() < 2) {
     sh.appendRow(['goal', 2000]);
