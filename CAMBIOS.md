@@ -74,8 +74,18 @@
 - `leaders/config.js` apunta al backend nuevo.
 - **Bug corregido**: una fecha guardada como 2026-11-04 volvía como 2026-11-03. Google convierte la celda en Date y, según las zonas horarias, cae el día anterior. `rows_` ahora usa lo que muestra la hoja cuando es yyyy-MM-dd, y si no, formatea en la zona de la propia hoja. Se probó primero solo con la zona de la hoja y no bastó contra Google real; por eso quedó la lectura de lo que se ve. 2 checks nuevos.
 
-**Verificación**: `node tests/leaders.js && node tests/sitio.mjs` → all checks passed (117), 669/669 checks ok. Contra Google real: GET `ok:true` con los 17 leaders y las 17 tareas; Spotfund leído sin error (`readAt` 2026-11-04T17:09Z); código malo → `wrong_code`; hop2027 → `ok`; una entrada de participation con una foto PNG → `ok`, `media: 1`, y la fecha 2026-11-04 después del arreglo (deploy @3). La fila de prueba se borró de la hoja. El archivo de prueba (PNG de 1 px) quedó en la carpeta privada "HoP Participation media".
+**Verificación**: `node tests/leaders.js && node tests/sitio.mjs` → all checks passed (117), 669/669 checks ok. Contra Google real: GET `ok:true` con los 17 leaders y las 17 tareas; Spotfund leído sin error (`readAt` 2026-11-04T17:09Z); código malo → `wrong_code`; código correcto → `ok`; una entrada de participation con una foto PNG → `ok`, `media: 1`, y la fecha 2026-11-04 después del arreglo (deploy @3). La fila de prueba se borró de la hoja. El archivo de prueba (PNG de 1 px) quedó en la carpeta privada "HoP Participation media".
 
 **Despliegue**: backend en vivo (@3). Se actualiza con `clasp push -f && clasp update-deployment <id>`, misma URL. Para volver atrás: `clasp update-deployment <id> -V 2`, o apuntar `leaders/config.js` al backend viejo.
 
 **Pendiente**: `MENTOR_CODE` (Isaac todavía no lo eligió; sin él nadie abre la revisión de mentor); compartir "HoP Participation media" con Emily, Paige y Savannah; puntos de cada tarea; mandar el link nuevo a los leaders; transferir a una cuenta de HoP según el estándar de entrega de sistemas de ECG.
+
+## 2026-11-04 (3) · Claude Code (Opus 5.5) · código de mentor, limpieza y documento de entrega
+
+**Qué se hizo**: `MENTOR_CODE` puesto en Script Properties (el valor lo tiene Isaac; no está en el repo). Para poder guardar hubo que quitar la propiedad vacía `spotfundError`: el editor no acepta valores vacíos y el código la lee como `|| ''`, así que no cambia nada. La imagen de prueba de 1 px se movió a la papelera de Drive. Nuevo `ENTREGA.md`, en inglés, para HoP: link, qué hace cada pestaña, dónde vive cada pieza, costo, qué puede cambiar el dueño, qué hacer si falla y pendientes.
+
+**Verificación**: contra Google real, `mentor_queue` con el código de equipo → `wrong_mentor_code`; con el código de mentor → `ok:true, entries:[]`. La carpeta "HoP Participation media" aparece como privada en Drive. `node tests/leaders.js && node tests/sitio.mjs`, salida en el commit de esta entrada.
+
+**No se hizo**: el link viejo (`jivalare-lab.github.io/hop-heart-meter`) sigue apuntando a la hoja vieja; la cuenta de GitHub de esta Mac no tiene permiso de escritura en ese repo. A los leaders hay que mandarles el link nuevo.
+
+**Pendiente**: compartir la carpeta de media con los mentores (faltan sus correos), mandar el link a los leaders, puntos por tarea, fundraisers de Spotfund por leader, cuenta de HoP y transferencia.
