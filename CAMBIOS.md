@@ -89,3 +89,13 @@
 **No se hizo**: el link viejo (`jivalare-lab.github.io/hop-heart-meter`) sigue apuntando a la hoja vieja; la cuenta de GitHub de esta Mac no tiene permiso de escritura en ese repo. A los leaders hay que mandarles el link nuevo.
 
 **Pendiente**: compartir la carpeta de media con los mentores (faltan sus correos), mandar el link a los leaders, puntos por tarea, fundraisers de Spotfund por leader, cuenta de HoP y transferencia.
+
+## 2026-11-04 (4) · Claude Code (Opus 5.5) · código de equipo cambiado y avisos de GitHub Pages
+
+**Qué se hizo**: el código de equipo anterior había quedado escrito en el historial público de este repo (commit 970c10e). Como nadie lo tenía todavía, Isaac eligió cambiarlo. El valor nuevo solo vive en Script Properties.
+
+**Verificación**: contra Google real, el código nuevo → `ok:true` y el anterior → `wrong_code`.
+
+**GitHub Pages**: el deploy de 7be9d6a se atascó en `updating_pages` del lado de GitHub y falló por timeout. Un rerun y un build pedido por API también terminaron en failure o cancelados, y cada uno mandó un correo. Aun así `pages` dice `built` con 7be9d6a, y el sitio sirve la versión nueva (`ENTREGA.md` y `/leaders/` → 200). Se dejó de reintentar.
+
+**Despliegue**: este commit queda local, sin push, para no disparar otro deploy mientras Pages siga inestable.
