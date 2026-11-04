@@ -53,3 +53,15 @@
 **Despliegue**: nada. Para activarlo hay que pegar `backend/Code.gs` en Apps Script, correr `setup` (crea las pestañas Participation y Tasks), agregar `MENTOR_CODE` en Script Properties, desplegar una versión nueva y compartir la carpeta "HoP Participation media" con los mentores.
 
 **Pendiente**: que Savannah ponga los puntos de cada tarea; repartir el código de mentor a Emily, Paige y Savannah.
+
+## 2026-11-04 · Claude Code (Opus 5.5) · subida a GitHub y preparación del despliegue del backend
+
+**Qué se hizo**: con el visto bueno de Isaac se subió `6c0ab89` a `origin/main`. El CI `verificar` corrió en verde (run 41860818717, 2m37s). Se instaló `clasp` 3.4.1 en la Mac para publicar `backend/Code.gs` desde la terminal y no pegándolo a mano.
+
+**Contexto**: el backend en vivo es `AKfycbwP5Nzd…/exec`, el que usa el Heart Meter viejo (`jivalare-lab.github.io/hop-heart-meter`). Se comparó con `backend/Code.gs`: las mismas acciones, las mismas columnas de Donations y Outreach, y el GET solo agrega campos. Publicarlo como versión nueva del mismo despliegue no rompe la página vieja y mantiene la URL.
+
+**Verificación**: `node tests/leaders.js && node tests/sitio.mjs` → all checks passed, 669/669 checks ok. Una GET de solo lectura al backend en vivo respondió `ok:true`.
+
+**Despliegue**: el backend todavía no está publicado. Falta que Isaac corra `clasp login` y pase el Script ID.
+
+**Pendiente**: publicar el backend, correr `setup` e `installSpotfund` y autorizar Drive y UrlFetch desde el editor (eso solo lo puede hacer el dueño), poner `MENTOR_CODE`, conectar `leaders/config.js` y decidir dónde vive `/leaders/`.

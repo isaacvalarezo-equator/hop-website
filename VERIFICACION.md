@@ -4,7 +4,7 @@ dominio: codigo
 nivel_requerido: 4
 nivel_actual: 2
 verificar: node tests/leaders.js && node tests/sitio.mjs
-revisado: 2026-11-02
+revisado: 2026-11-03
 fuente: ~/.claude/verificacion/PROTOCOLO.md
 ---
 
@@ -20,7 +20,7 @@ fuente: ~/.claude/verificacion/PROTOCOLO.md
 | Nivel requerido | **4** |
 | Nivel actual | **2** |
 | Comando de verificación | `node tests/leaders.js && node tests/sitio.mjs` |
-| Última revisión | 2026-11-02 |
+| Última revisión | 2026-11-03 |
 
 **Brecha abierta (2 de 4).** Clasificado el 2026-11-02. Repo unico (isaacvalarezo-equator/hop-website) con el sitio de Heart of Passion en la raiz, el Heart Meter en /leaders/ y el backend de Apps Script que lee Spotfund cada hora. Requerido 4 porque los totales de dinero de los leaders salen de aqui y un error de suma o una lectura vieja de Spotfund podria pasar inadvertido. Tiene git, pruebas de las reglas criticas (montos, borrado, codigos, suma, doble conteo, lectura fallida de Spotfund), chequeo de esquema y CI escrito; su nivel real es 2 hasta que el CI corra en verde en GitHub y Isaac apruebe subirlo. Reemplazara a HoP Nola Heart Meter y a HoP website cuando se mude el link de los leaders. Clasificacion inicial del agente, pendiente de que Isaac la confirme.
 
