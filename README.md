@@ -13,7 +13,7 @@ Every page is `noindex` and `robots.txt` blocks crawlers. The public site does n
 ## Status
 
 - The site is a prototype. Its text comes from HoP's previous site; yellow notes mark what HoP still has to confirm.
-- `/leaders/` is not connected: `leaders/config.js` is empty on purpose. The live Heart Meter is still the old one at `jivalare-lab.github.io/hop-heart-meter`. This copy gets the Apps Script URL only after the new backend is deployed and checked.
+- `/leaders/` is connected to the backend in the Sheet "HoP Nola Heart Meter (data)", owned by info@equatorcg.com. Deploy with `cd backend && clasp push -f && clasp update-deployment AKfycbzI4lwBcZF90k4r25h0-JqHnOdI9Gi_J5kEiomXwYN3NxgLDD3BSWHcD2qoFMiDwu9LvA`, which keeps the same URL. The old Heart Meter (`jivalare-lab.github.io/hop-heart-meter`, Sheet in isaacvalarezo30@gmail.com) had no data and is retired once the leaders get the new link.
 
 ## Spotfund
 
@@ -31,7 +31,7 @@ When a leader is linked, gifts they logged by hand with "How it came in" = Spotf
 
 If a read fails, or finds fewer fundraisers than last time, the last good read is kept, the error is saved, Apps Script emails the owner, and the page says in red that Spotfund amounts may be out of date.
 
-To turn it on: paste `backend/Code.gs` into the Sheet's Apps Script, save, deploy a new version, then run `installSpotfund` once from the editor.
+It is on: `installSpotfund` ran on 2026-11-04 and Google read Spotfund without errors.
 
 ## Checks
 

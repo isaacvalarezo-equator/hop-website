@@ -84,11 +84,20 @@ function sheet_(name) {
 }
 
 function rows_(name) {
-  const values = sheet_(name).getDataRange().getValues();
+  const range = sheet_(name).getDataRange();
+  const values = range.getValues();
+  // A date cell comes back from getValues() as a Date that can land on the day before, depending on
+  // time zones. What the Sheet shows is the date the leader typed, so use that when it is yyyy-MM-dd.
+  const shown = range.getDisplayValues();
   const head = values.shift();
-  return values.filter(r => r[0] !== '').map(r => {
-    const o = {};
-    head.forEach((h, i) => { o[h] = r[i] instanceof Date ? Utilities.formatDate(r[i], 'America/Chicago', 'yyyy-MM-dd') : r[i]; });
+  shown.shift();
+  const tz = SpreadsheetApp.getActiveSpreadsheet().getSpreadsheetTimeZone();
+  return values.map((r, n) => [r, shown[n]]).filter(p => p[0][0] !== '').map(p => {
+    const r = p[0], o = {};
+    head.forEach((h, i) => {
+      if (!(r[i] instanceof Date)) { o[h] = r[i]; return; }
+      o[h] = /^\d{4}-\d{2}-\d{2}$/.test(p[1][i]) ? p[1][i] : Utilities.formatDate(r[i], tz, 'yyyy-MM-dd');
+    });
     return o;
   });
 }

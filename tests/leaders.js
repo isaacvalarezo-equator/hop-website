@@ -29,12 +29,12 @@ function fakeGoogle(teamCode,preset){
   const sheets={};
   const mkSheet=name=>{const rows=[];return {rows,
     appendRow:r=>rows.push(r.slice()),setFrozenRows(){},
-    getDataRange:()=>({getValues:()=>rows.map(r=>r.slice())}),
+    getDataRange:()=>({getValues:()=>rows.map(r=>r.slice()),getDisplayValues:()=>rows.map(r=>r.map(v=>v&&v.shown?v.shown:String(v)))}),
     getLastRow:()=>rows.length,getLastColumn:()=>Math.max(...rows.map(r=>r.length)),
     getRange:(r,c,nr,nc)=>({getValues:()=>{const out=[];for(let i=0;i<(nr||1);i++)out.push(rows[r-1+i].slice(c-1,c-1+(nc||1)));return out},setValue:v=>{rows[r-1][c-1]=v}}),
     deleteRow:r=>rows.splice(r-1,1)}};
   Object.entries(preset||{}).forEach(([n,rows])=>{sheets[n]=mkSheet(n);rows.forEach(r=>sheets[n].rows.push(r.slice()))});
-  const ss={getId:()=>"sheet1",getName:()=>"HoP data",getSheetByName:n=>sheets[n]||null,insertSheet:n=>(sheets[n]=mkSheet(n))};
+  const ss={getId:()=>"sheet1",getName:()=>"HoP data",getSpreadsheetTimeZone:()=>"America/New_York",getSheetByName:n=>sheets[n]||null,insertSheet:n=>(sheets[n]=mkSheet(n))};
   const cache={};let uuid=0;
   const props={TEAM_CODE:teamCode};
   // Fake Drive: one backups folder whose files can be copied in and trashed.
@@ -54,7 +54,7 @@ function fakeGoogle(teamCode,preset){
     PropertiesService:{getScriptProperties:()=>({getProperty:k=>props[k]==null?null:props[k],setProperty:(k,v)=>{props[k]=v}})},
     CacheService:{getScriptCache:()=>({get:k=>cache[k]||null,put:(k,v)=>{cache[k]=v}})},
     LockService:{getScriptLock:()=>({waitLock(){},releaseLock(){}})},
-    Utilities:{getUuid:()=>"id"+(++uuid),formatDate:()=> "2026-10-19",base64Decode:t=>{if(!/^[A-Za-z0-9+/=]*$/.test(t))throw new Error("bad");return [...Buffer.from(t,"base64")]},newBlob:(bytes,type,name)=>({bytes,type,name})}};
+    Utilities:{getUuid:()=>"id"+(++uuid),formatDate:(d,tz)=>{ctx.lastTz=tz;return "2026-10-19"},base64Decode:t=>{if(!/^[A-Za-z0-9+/=]*$/.test(t))throw new Error("bad");return [...Buffer.from(t,"base64")]},newBlob:(bytes,type,name)=>({bytes,type,name})}};
   vm.createContext(ctx);vm.runInContext(fs.readFileSync("backend/Code.gs","utf8"),ctx);
   ctx.get=()=>JSON.parse(ctx.doGet().text);
   ctx.post=b=>JSON.parse(ctx.doPost({postData:{contents:JSON.stringify(b)}}).text);
@@ -63,6 +63,9 @@ function fakeGoogle(teamCode,preset){
 try{
   const g=fakeGoogle("Secret-Code");
   ok(g.get().settings.leaders.length===17,"empty Settings falls back to the 17 leaders");
+  { const d=fakeGoogle("x"); d.get(); const day=vm.runInContext("new Date(Date.UTC(2026,10,4,5))",d); day.shown="2026-11-04";
+    d.sheets.Donations.rows.push(["a","",day]); ok(d.get().donations[0].date==="2026-11-04","a date cell comes back as the date the Sheet shows, never the day before");
+    day.shown="Nov 4"; d.get(); ok(d.lastTz==="America/New_York","a date shown in another format is read in the Sheet's own time zone"); }
   ok(g.post({action:"check",code:"nope"}).error==="wrong_code","wrong team code is rejected");
   ok(g.post({action:"check",code:" secret-code "}).ok,"right team code works (case and spaces ignored)");
   ok(g.post({action:"add_donation",code:"Secret-Code",leader:"Nobody",amount:5}).error==="unknown_leader","unknown leader is rejected");

@@ -65,3 +65,17 @@
 **Despliegue**: el backend todavía no está publicado. Falta que Isaac corra `clasp login` y pase el Script ID.
 
 **Pendiente**: publicar el backend, correr `setup` e `installSpotfund` y autorizar Drive y UrlFetch desde el editor (eso solo lo puede hacer el dueño), poner `MENTOR_CODE`, conectar `leaders/config.js` y decidir dónde vive `/leaders/`.
+
+## 2026-11-04 (2) · Claude Code (Opus 5.5) · backend en vivo en la cuenta de ECG
+
+**Qué se hizo**: Isaac pidió dejarlo todo en info@equatorcg.com y corriendo.
+- La hoja vieja ("HoP Nola Heart Meter (data)", de isaacvalarezo30@gmail.com) tenía 0 donaciones y 0 contactos. No se mudó nada: se creó una hoja nueva con el mismo nombre y su Apps Script en info@equatorcg.com con `clasp create`. Script ID en `backend/.clasp.json`.
+- Despliegue web `AKfycbzI4lwB…` (ejecuta como el dueño, acceso anónimo), zona horaria America/Chicago. `TEAM_CODE` puesto en Script Properties (no está en el repo, que es público). Isaac aceptó los permisos. Corrieron `setup`, `installSpotfund` e `installBackup`.
+- `leaders/config.js` apunta al backend nuevo.
+- **Bug corregido**: una fecha guardada como 2026-11-04 volvía como 2026-11-03. Google convierte la celda en Date y, según las zonas horarias, cae el día anterior. `rows_` ahora usa lo que muestra la hoja cuando es yyyy-MM-dd, y si no, formatea en la zona de la propia hoja. Se probó primero solo con la zona de la hoja y no bastó contra Google real; por eso quedó la lectura de lo que se ve. 2 checks nuevos.
+
+**Verificación**: `node tests/leaders.js && node tests/sitio.mjs` → all checks passed (117), 669/669 checks ok. Contra Google real: GET `ok:true` con los 17 leaders y las 17 tareas; Spotfund leído sin error (`readAt` 2026-11-04T17:09Z); código malo → `wrong_code`; hop2027 → `ok`; una entrada de participation con una foto PNG → `ok`, `media: 1`, y la fecha 2026-11-04 después del arreglo (deploy @3). La fila de prueba se borró de la hoja. El archivo de prueba (PNG de 1 px) quedó en la carpeta privada "HoP Participation media".
+
+**Despliegue**: backend en vivo (@3). Se actualiza con `clasp push -f && clasp update-deployment <id>`, misma URL. Para volver atrás: `clasp update-deployment <id> -V 2`, o apuntar `leaders/config.js` al backend viejo.
+
+**Pendiente**: `MENTOR_CODE` (Isaac todavía no lo eligió; sin él nadie abre la revisión de mentor); compartir "HoP Participation media" con Emily, Paige y Savannah; puntos de cada tarea; mandar el link nuevo a los leaders; transferir a una cuenta de HoP según el estándar de entrega de sistemas de ECG.
