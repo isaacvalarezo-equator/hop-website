@@ -99,3 +99,13 @@
 **GitHub Pages**: el deploy de 7be9d6a se atascó en `updating_pages` del lado de GitHub y falló por timeout. Un rerun y un build pedido por API también terminaron en failure o cancelados, y cada uno mandó un correo. Aun así `pages` dice `built` con 7be9d6a, y el sitio sirve la versión nueva (`ENTREGA.md` y `/leaders/` → 200). Se dejó de reintentar.
 
 **Despliegue**: este commit queda local, sin push, para no disparar otro deploy mientras Pages siga inestable.
+
+## 2026-11-05 · Claude Code (Opus 5.5) · archivos de traspaso entre agentes
+
+**Qué se hizo**: por la regla nueva de Isaac (traspaso entre agentes), se crearon `AGENTS.md` (fuente única: qué es, dónde vive, cómo publicar, reglas, estilo), `CLAUDE.md` (remite a `AGENTS.md` y al filtro de verificación) y `TAREAS.md` (pendientes en orden con su «hecho cuando»). No se tocó código.
+
+**Estado comprobado hoy**: el backend responde `ok`, 0 donaciones y 0 tareas reales; Spotfund leído a las 15:18 UTC sin error; último respaldo a las 15:38 UTC. Los activadores por hora corrieron solos durante la noche.
+
+**Verificación**: `node tests/leaders.js && node tests/sitio.mjs`, salida pegada en el informe de esta sesión.
+
+**Pendiente**: ver `TAREAS.md`.
