@@ -149,3 +149,11 @@
 **Ojo**: la columna "Follow us" del pie está vacía desde que se quitaron las notas (decía que faltaba confirmar las redes oficiales). Falta que HoP dé los links.
 
 **Despliegue**: push a main, GitHub Pages. Volver atrás: `git revert` de este commit.
+
+## 2026-11-07 (5) · Instagram de HoP en el pie
+
+**Qué se hizo**: a pedido de Isaac, la columna "Follow us" del pie de las 5 páginas, vacía desde que se quitaron las notas, lleva ahora "Instagram @heartofpassion" con link a https://www.instagram.com/heartofpassion/. La cuenta salió de una búsqueda web: su perfil dice que sirve a adolescentes y jóvenes con cáncer desde 2004, igual que HoP. No estaba en el material del sitio viejo; conviene que Isaac o Savannah confirmen que es la oficial. Facebook no se puso: no hay fuente.
+
+**Verificación**: `node tests/leaders.js && node tests/sitio.mjs` → all checks passed, 674/674 checks ok. Captura del pie revisada.
+
+**Despliegue**: push a main, GitHub Pages. Volver atrás: `git revert` de este commit.
