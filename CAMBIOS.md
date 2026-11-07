@@ -119,3 +119,13 @@
 **Verificación**: `node tests/leaders.js && node tests/sitio.mjs` → all checks passed, 674/674 checks ok. Las pruebas de `noindex` se invirtieron: el sitio público debe ser indexable y no tener notas ni aviso; `/leaders/` sigue bloqueado.
 
 **Despliegue**: push a main, GitHub Pages. El dominio heartofpassion.org se conecta en Bluehost (4 registros A y CNAME `www`, sin tocar MX). Volver atrás: `git revert` de este commit.
+
+## 2026-11-07 (2) · Claude Code (Opus 5.5) · dominio heartofpassion.org
+
+**Qué se hizo**: Isaac cambió en Bluehost (cuenta de HoP) el DNS de heartofpassion.org: 4 registros `A @` a 185.199.108-111.153 y `CNAME www` a isaacvalarezo-equator.github.io. MX, `mail`, `imap`, `pop`, `smtp`, los subdominios (`nola`, `atl`, `festival`, `blog`) y los TXT no se tocaron. Antes: `A @ 66.235.200.146` y `CNAME www heartofpassion.org`. Se corrigió un tipeo (85.199.110.153).
+
+**Estado**: el servidor de Bluehost ya responde los valores nuevos; Google (8.8.8.8) guarda el viejo hasta 4 h (TTL 14400). Se conectó el dominio en Pages y el certificado falló (`bad_authz`) por ese caché, y github.io empezó a redirigir al dominio viejo. Se desconectó para que github.io siga sirviendo. Un vigilante en segundo plano reconecta el dominio, espera el certificado y activa HTTPS cuando Google, Cloudflare y Quad9 muestren las IP nuevas.
+
+**Volver atrás**: en Bluehost, `A @` a 66.235.200.146 y borrar los otros 3 `A @`; `CNAME www` a heartofpassion.org. En Pages, `cname` vacío.
+
+**Pendiente**: HTTPS en heartofpassion.org; link de donación; ciudades de "Where we are"; heartofpassion.net y redcarpetday.org (el .net tiene el correo de contacto).
