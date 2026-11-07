@@ -139,3 +139,13 @@
 **Volver atrás**: igual que la entrada anterior.
 
 **Pendiente**: HTTPS. Si el vigilante termina sin certificado, revisar `gh api repos/isaacvalarezo-equator/hop-website/pages --jq .https_certificate` y repetir quitar y poner `cname`.
+
+## 2026-11-07 (4) · Claude Code (Opus 5.5) · crédito de ECG con logo en el pie
+
+**Qué se hizo**: a pedido de Isaac, el pie de las 5 páginas cambia "Prototype prepared for Heart of Passion by Equator Consulting Group." por "Website by" + logo de ECG (versión una tinta del kit de marca), con link a https://equatorcg.com. El logo es una máscara CSS con el SVG embebido como data URI (en `assets/styles.css`, clase `.logo-ecg`): toma el color gris del texto del pie para no competir con la marca de HoP, y se oscurece al pasar el mouse. Embebido porque la auditoría abre las páginas con `file://` y ahí un SVG externo como máscara falla por CORS.
+
+**Verificación**: `node tests/leaders.js && node tests/sitio.mjs` → all checks passed, 674/674 checks ok. Captura del pie en escritorio y móvil revisada.
+
+**Ojo**: la columna "Follow us" del pie está vacía desde que se quitaron las notas (decía que faltaba confirmar las redes oficiales). Falta que HoP dé los links.
+
+**Despliegue**: push a main, GitHub Pages. Volver atrás: `git revert` de este commit.
