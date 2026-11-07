@@ -9,7 +9,7 @@ scripts.forEach((s,i)=>{try{new vm.Script(s);ok(true,"inline script parses")}cat
 try{new vm.Script(fs.readFileSync("backend/Code.gs","utf8"));ok(true,"Code.gs parses")}catch(e){ok(false,"Code.gs parses: "+e.message)}
 try{new vm.Script(fs.readFileSync("leaders/config.js","utf8"));ok(true,"config.js parses")}catch(e){ok(false,"config.js parses: "+e.message)}
 ok(/<meta name="robots" content="noindex,nofollow">/.test(html),"noindex meta");
-ok(/Disallow: \//.test(fs.readFileSync("robots.txt","utf8")),"robots.txt blocks crawlers");
+ok(/^Disallow: \/leaders\/$/m.test(fs.readFileSync("robots.txt","utf8")),"robots.txt keeps crawlers out of /leaders/");
 ok(fs.existsSync("leaders/logo.png"),"leaders/logo.png present");
 const ids=[...html.matchAll(/[\s<]id="([^"$]+)"/g)].map(m=>m[1]);
 ok(ids.length===new Set(ids).size,"ids are unique ("+ids.length+")");

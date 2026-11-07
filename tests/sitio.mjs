@@ -34,7 +34,9 @@ for (const p of paginas) {
   ok(html.startsWith("<!doctype html>"), `${p}: doctype en la primera línea`);
   ok(/<head>\s*<meta charset="utf-8">/.test(html), `${p}: charset primero en head`);
   ok(!html.includes("—"), `${p}: sin guion largo`);
-  ok(html.includes('name="robots" content="noindex'), `${p}: noindex mientras sea prototipo`);
+  // Live since 2026-11-07: the public site is indexable and carries no draft markers.
+  ok(!html.includes('noindex'), `${p}: indexable (sitio en vivo)`);
+  ok(!/class="nota"|aviso-borrador|Draft for discussion/.test(html), `${p}: sin notas ni aviso de borrador`);
 }
 const css = readFileSync(join(raiz, "assets/styles.css"), "utf8");
 ok(!/minmax\(\d/.test(css), "styles.css: ningún minmax con ancho fijo sin min()");

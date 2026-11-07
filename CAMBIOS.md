@@ -109,3 +109,13 @@
 **Verificación**: `node tests/leaders.js && node tests/sitio.mjs`, salida pegada en el informe de esta sesión.
 
 **Pendiente**: ver `TAREAS.md`.
+
+## 2026-11-07 · Claude Code (Opus 5.5) · el sitio sale de borrador
+
+**Qué se hizo**: Isaac dijo que HoP aprobó el sitio y lo quiere en vivo hoy. Se quitaron el aviso "Draft for discussion" y las 32 notas amarillas de las 5 páginas públicas, se quitó `noindex`, y `robots.txt` ahora solo bloquea `/leaders/` y apunta a `sitemap.xml` (nuevo, con heartofpassion.org). Las frases que hablaban del sitio de 2023 se reescribieron en presente, sin agregar datos: Hang Time, membresías, quién estuvo en Red Carpet Day, cómo se registra un invitado y el título de la junta. `/leaders/` sigue con `noindex`.
+
+**Ojo, sin confirmar por HoP** (estaban en las notas): la tarjeta "Online" de Donate dice PayPal pero no tiene link; la lista de la junta es la de 2023 más Elaine; fechas y requisitos del LDP y de Red Carpet Day vienen de 2023; las ciudades de la portada vienen de 2023 y no incluyen New Orleans.
+
+**Verificación**: `node tests/leaders.js && node tests/sitio.mjs` → all checks passed, 674/674 checks ok. Las pruebas de `noindex` se invirtieron: el sitio público debe ser indexable y no tener notas ni aviso; `/leaders/` sigue bloqueado.
+
+**Despliegue**: push a main, GitHub Pages. El dominio heartofpassion.org se conecta en Bluehost (4 registros A y CNAME `www`, sin tocar MX). Volver atrás: `git revert` de este commit.
