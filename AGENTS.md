@@ -8,7 +8,7 @@ Un repositorio con tres piezas de Heart of Passion (HoP, nonprofit "For Teens Fr
 
 | Ruta | Qué es | Para quién |
 |---|---|---|
-| `/` (`index.html`, `about.html`, `red-carpet-day.html`, `get-involved.html`, `donate.html`, `assets/`) | Sitio nuevo de HoP. Prototipo, falta que HoP lo apruebe | El público |
+| `/` (`index.html`, `about.html`, `red-carpet-day.html`, `get-involved.html`, `donate.html`, `assets/`) | Sitio nuevo de HoP, aprobado y en vivo desde el 7 nov 2026 | El público |
 | `/leaders/` | Heart Meter: donaciones, outreach y participation points de los leaders de HoP Nola | Leaders (menores) y mentores, solo por link |
 | `backend/Code.gs` | Apps Script que usa la hoja de Google como base de datos y lee Spotfund cada hora | El dueño de la hoja |
 
@@ -16,7 +16,7 @@ Personas: Savannah Solomon (fundadora y presidenta, mentora), Elaine Marie Ehren
 
 ## Dónde vive
 
-- Página: GitHub Pages, https://isaacvalarezo-equator.github.io/hop-website/ y `/leaders/`.
+- Página: GitHub Pages con dominio propio, http://heartofpassion.org/ (HTTPS en espera del certificado) y `/leaders/`. Las URL de github.io redirigen ahí.
 - Backend y datos: hoja "HoP Nola Heart Meter (data)" en **info@equatorcg.com**, Apps Script ligado (Script ID en `backend/.clasp.json`), despliegue web `AKfycbzI4lwB…` (URL completa en `leaders/config.js`).
 - Carpetas de Drive en info@equatorcg.com: "HoP Participation media" (privada) y "HoP Heart Meter backups".
 - El Heart Meter viejo (`jivalare-lab.github.io/hop-heart-meter`, hoja en isaacvalarezo30@gmail.com) está retirado. Estaba vacío y ningún leader tiene ese link.

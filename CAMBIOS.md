@@ -129,3 +129,13 @@
 **Volver atrás**: en Bluehost, `A @` a 66.235.200.146 y borrar los otros 3 `A @`; `CNAME www` a heartofpassion.org. En Pages, `cname` vacío.
 
 **Pendiente**: HTTPS en heartofpassion.org; link de donación; ciudades de "Where we are"; heartofpassion.net y redcarpetday.org (el .net tiene el correo de contacto).
+
+## 2026-11-07 (3) · Claude Code (Opus 5.5) · dominio en vivo por HTTP, certificado en espera
+
+**Qué se hizo**: el primer vigilante conectó el dominio cuando Google, Cloudflare y Quad9 ya mostraban las 4 IP y el CNAME `www`, pero el certificado se quedó en `new` más de una hora y el vigilante salió con error a las 11:49. Se quitó y volvió a poner `cname` en Pages para reiniciar la solicitud. Un vigilante nuevo (`vigilar_cert.sh`, en el scratchpad de la sesión) revisa cada 5 min por 4 h, vuelve a poner el dominio si el estado es `bad_authz` o `errored`, y activa `https_enforced` cuando el certificado está `approved`.
+
+**Comprobado**: `http://heartofpassion.org/` 200 con el título del sitio nuevo; `www` y github.io redirigen 301 a `http://heartofpassion.org/`. `AGENTS.md` ya apunta al dominio.
+
+**Volver atrás**: igual que la entrada anterior.
+
+**Pendiente**: HTTPS. Si el vigilante termina sin certificado, revisar `gh api repos/isaacvalarezo-equator/hop-website/pages --jq .https_certificate` y repetir quitar y poner `cname`.
